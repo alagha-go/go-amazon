@@ -21,6 +21,9 @@ func (dep *Department) Create() ([]byte, int) {
 		return variables.JsonMarshal(Response), http.StatusConflict
 	}
 	dep.NewID()
+	for index := range dep.Categories {
+		dep.Categories[index].NewID()
+	}
 	_, err := collection.InsertOne(ctx, dep)
 	if err != nil {
 		Response.Failed = true
