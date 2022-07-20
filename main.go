@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/alagha-go/go-amazon/lib/handler"
 	_ "github.com/alagha-go/go-amazon/lib/variables"
+	"github.com/alagha-go/go-amazon/lib/handler"
 )
 
 var (
