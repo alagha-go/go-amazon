@@ -33,6 +33,7 @@ func init() {
 
 
 func StartCollection() {
+	go crawler.ReloadTor()
 	var Deps []departments.Department
 	deps := crawler.GetDepartments()
 	json.Unmarshal(variables.JsonMarshal(deps), &Deps)
