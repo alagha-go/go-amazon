@@ -9,7 +9,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 
@@ -38,9 +37,8 @@ func GetSubTypes(ID primitive.ObjectID) ([]byte, int) {
 	collection := variables.Local.Database("Amazon").Collection("Departments")
 	Response := variables.Response{Action: variables.GetSubTypes}
 	var dep Department
-	opts := options.FindOne().SetProjection(bson.M{"categories.subcategories.types": bson.M{"$elemMatch": bson.M{"_id": ID}}})
 
-	err := collection.FindOne(ctx, bson.M{"categories.subcategories.types._id": ID}, opts).Decode(&dep)
+	err := collection.FindOne(ctx, bson.M{"categories.subcategories.types._id": ID}).Decode(&dep)
 	if err != nil {
 		Response.Failed = true
 		if err == mongo.ErrNilDocument {
@@ -52,10 +50,14 @@ func GetSubTypes(ID primitive.ObjectID) ([]byte, int) {
 		return variables.JsonMarshal(Response), http.StatusInternalServerError
 	}
 	Response.Success = true
-	if len(dep.Categories) > 0 {
-		if len(dep.Categories[0].SubCategories) > 0 {
-			if len(dep.Categories[0].SubCategories[0].Types) > 0 {
-				Response.Data = dep.Categories[0].SubCategories[0].Types[0].SubTypes
+	loop:
+	for cindex := range dep.Categories {
+		for sindex := range dep.Categories[cindex].SubCategories {
+			for tindex := range dep.Categories[cindex].SubCategories[sindex].Types {
+				if dep.Categories[cindex].SubCategories[sindex].Types[tindex].ID.Hex() == ID.Hex() {
+					Response.Data = dep.Categories[cindex].SubCategories[sindex].Types[tindex].SubTypes
+					break loop
+				}
 			}
 		}
 	}
