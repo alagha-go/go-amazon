@@ -8,6 +8,7 @@ import (
 
 
 func TestSubCategories(t *testing.T) {
+	go ReloadTor()
 	println("called Test2")
 	var passed bool
 	var departments []Department

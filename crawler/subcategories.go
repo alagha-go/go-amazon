@@ -52,5 +52,4 @@ func (category *Category) SetSubCategories() {
 	})
 	
 	collector.Visit(category.Url)
-	Reload()
 }

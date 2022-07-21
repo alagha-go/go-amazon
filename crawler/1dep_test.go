@@ -9,6 +9,7 @@ import (
 )
 
 func TestDepartments(t *testing.T) {
+	go ReloadTor()
 	println("called Test1")
 	deps := GetDepartments()
 	if len(deps) < 1 {

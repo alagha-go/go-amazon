@@ -41,5 +41,4 @@ func (subcategory *SubCategory) SetTypes(){
 	})
 	
 	collector.Visit(subcategory.Url)
-	Reload()
 }

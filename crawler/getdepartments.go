@@ -15,6 +15,10 @@ const (
 	ProxyUrl           = "socks5://127.0.0.1:9050"
 )
 
+var (
+	LastIP string
+)
+
 func GetDepartments() []Department {
 	collector := colly.NewCollector()
 	err := collector.SetProxy(ProxyUrl)
@@ -31,7 +35,6 @@ func GetDepartments() []Department {
 	})
 
 	collector.Visit(DepartmentsPageUrl)
-	Reload()
 	return Departments
 }
 
@@ -58,10 +61,24 @@ func GetDepartment(element *colly.HTMLElement) Department {
 	return Department
 }
 
+func ReloadTor() {
+	for {
+		Reload()
+		time.Sleep(3*time.Second)
+	}
+}
+
 func Reload() {
 	_, err := exec.Command("systemctl", "reload", "tor").Output()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	time.Sleep(time.Second)
+	out, err := exec.Command("torsocks", "curl", "ipv4.icanhazip.com").Output()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	if string(out) == LastIP {
+		Reload()
+	}
+	LastIP = string(out)
 }

@@ -39,5 +39,4 @@ func (Type *Type) SetSubTypes() {
 	})
 	
 	collector.Visit(Type.Url)
-	Reload()
 }
